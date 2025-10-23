@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Check if a file is provided
+if [ -z "$1" ]; then
+    echo "Usage: run <filename>"
+    exit 1
+fi
+
+file="$1"
+ext="${file##*.}"
+
+if [ ! -f "$file" ]; then
+    echo "File not found: $file"
+    exit 1
+fi
+
+case "$ext" in
+    hs)
+        echo "Running Haskell file: $file"
+        runhaskell "$file"
+        ;;
+    py)
+        echo "Running Python file: $file"
+        python3 "$file"
+        ;;
+    js)
+        echo "Running JavaScript file: $file"
+        node "$file"
+        ;;
+    c)
+        echo "Compiling and running C file: $file"
+        gcc "$file" -o temp.out && ./temp.out && rm temp.out
+        ;;
+    cpp)
+        echo "Compiling and running C++ file: $file"
+        g++ "$file" -o temp.out && ./temp.out && rm temp.out
+        ;;
+    sh)
+        echo "Running shell script: $file"
+        bash "$file"
+        ;;
+    *)
+        echo "Unsupported file type: .$ext"
+        exit 1
+        ;;
+esac
+

@@ -1,0 +1,254 @@
+[
+  {
+    "proc": "@main",
+    "body": [
+      {
+        "opcode": "const",
+        "args": [
+          0
+        ],
+        "result": "%1"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%1"
+        ],
+        "result": "%0"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          0
+        ],
+        "result": "%3"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%3"
+        ],
+        "result": "%2"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          0
+        ],
+        "result": "%5"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%5"
+        ],
+        "result": "%4"
+      },
+      {
+        "opcode": "add",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%6"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%6"
+        ],
+        "result": "%0"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          42
+        ],
+        "result": "%7"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%7"
+        ],
+        "result": "%0"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          21
+        ],
+        "result": "%8"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%8"
+        ],
+        "result": "%2"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          5
+        ],
+        "result": "%9"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%9"
+        ],
+        "result": "%4"
+      },
+      {
+        "opcode": "add",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%10"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%10"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "sub",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%11"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%11"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "mul",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%12"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%12"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "div",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%13"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%13"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "div",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%14"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%14"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "mod",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%15"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%15"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "neg",
+        "args": [
+          null
+        ],
+        "result": "%16"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%16"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "neg",
+        "args": [
+          null
+        ],
+        "result": "%17"
+      },
+      {
+        "opcode": "div",
+        "args": [
+          "%17",
+          null
+        ],
+        "result": "%18"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%18"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "neg",
+        "args": [
+          null
+        ],
+        "result": "%19"
+      },
+      {
+        "opcode": "mod",
+        "args": [
+          "%19",
+          null
+        ],
+        "result": "%20"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%20"
+        ],
+        "result": null
+      }
+    ]
+  }
+]

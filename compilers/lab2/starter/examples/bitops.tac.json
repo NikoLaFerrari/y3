@@ -1,0 +1,246 @@
+[
+  {
+    "proc": "@main",
+    "body": [
+      {
+        "opcode": "const",
+        "args": [
+          0
+        ],
+        "result": "%1"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%1"
+        ],
+        "result": "%0"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          0
+        ],
+        "result": "%3"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%3"
+        ],
+        "result": "%2"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          0
+        ],
+        "result": "%5"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%5"
+        ],
+        "result": "%4"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          10
+        ],
+        "result": "%6"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%6"
+        ],
+        "result": "%0"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          42
+        ],
+        "result": "%7"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%7"
+        ],
+        "result": "%2"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          100
+        ],
+        "result": "%8"
+      },
+      {
+        "opcode": "neg",
+        "args": [
+          "%8"
+        ],
+        "result": "%9"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%9"
+        ],
+        "result": "%4"
+      },
+      {
+        "opcode": "and",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%10"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%10"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "and",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%11"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%11"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "or",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%12"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%12"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "or",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%13"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%13"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "xor",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%14"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%14"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "xor",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%15"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%15"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "not",
+        "args": [
+          null
+        ],
+        "result": "%16"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%16"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "not",
+        "args": [
+          null
+        ],
+        "result": "%17"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%17"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "shl",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%18"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%18"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "shr",
+        "args": [
+          null,
+          null
+        ],
+        "result": "%19"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%19"
+        ],
+        "result": null
+      }
+    ]
+  }
+]
