@@ -1,0 +1,16 @@
+def main() {
+    var x = 0 : int;
+    
+    // DEAD STORE: 'x' is overwritten on the next line before being used
+    x = 100; 
+    
+    // DEAD STORE: This value is overwritten later
+    x = 200; 
+
+    // Live store: This value is used in the print
+    x = 300; 
+    print(x);
+
+    // DEAD STORE: 'x' is assigned but never used (variable goes out of scope)
+    x = 400;
+}

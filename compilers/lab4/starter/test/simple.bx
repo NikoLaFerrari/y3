@@ -1,0 +1,17 @@
+def main() {
+    m1(); 
+    m2();
+}
+
+def m1() {
+    var a = 5 : int;
+    print(a);
+}
+
+def m2() {
+    var a1 = 5 : int;
+    print(a1);
+}
+
+
+

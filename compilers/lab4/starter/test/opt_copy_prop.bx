@@ -1,0 +1,15 @@
+def main() {
+    var a = 42 : int;
+    var b = 0 : int;
+    var c = 0 : int;
+
+    // Copy instruction: b = a
+    b = a; 
+
+    // Copy instruction: c = b
+    c = b;
+
+    // Optimization: Should become print(a) or print(42)
+    // The copy chain a -> b -> c should be collapsed.
+    print(c);
+}

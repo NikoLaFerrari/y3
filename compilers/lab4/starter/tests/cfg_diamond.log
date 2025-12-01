@@ -1,0 +1,13 @@
+ENTRY %.B0
+BLOCK %.B0:
+  succs: %.B1, %.B2
+  preds: 
+BLOCK %.B1:
+  succs: %.B3
+  preds: %.B0
+BLOCK %.B2:
+  succs: %.B3
+  preds: %.B0
+BLOCK %.B3:
+  succs: 
+  preds: %.B1, %.B2

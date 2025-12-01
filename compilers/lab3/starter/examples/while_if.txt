@@ -1,0 +1,32 @@
+def main() {
+  // Prints running sums of even numbers up to 8, then an if/else-if/else marker.
+  var i = 0 : int;
+  var sum = 0 : int;
+
+  while (i < 10 && !(i == 9)) {
+    i = i + 1;
+
+    // skip odd i
+    if ((i % 2) == 1) {
+      continue;
+    } else {
+      sum = sum + i;
+      print(sum);
+    }
+
+    // stop once we hit >= 8
+    if (i >= 8) {
+      break;
+    }
+  }
+
+  // sum is 20 here → this prints 222
+  if (sum > 10 && sum < 20) {
+    print(111);
+  } else if (sum >= 20) {
+    print(222);
+  } else {
+    print(333);
+  }
+}
+

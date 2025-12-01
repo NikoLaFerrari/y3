@@ -1,0 +1,9 @@
+// Copy Propagation
+def main() {
+  var a = 42 : int;
+  var b = 0 : int;
+  var c = 0 : int;
+  b = a; 
+  c = b;
+  print(c); // Should optimize to use 'a' or '42'
+}

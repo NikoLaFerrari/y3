@@ -1,0 +1,71 @@
+[
+  {
+    "proc": "@main",
+    "body": [
+      {
+        "opcode": "const",
+        "args": [
+          10
+        ],
+        "result": "%1"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%1"
+        ],
+        "result": "%0"
+      },
+      {
+        "opcode": "const",
+        "args": [
+          20
+        ],
+        "result": "%3"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%3"
+        ],
+        "result": "%2"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%2"
+        ],
+        "result": null
+      },
+      {
+        "opcode": "const",
+        "args": [
+          1
+        ],
+        "result": "%4"
+      },
+      {
+        "opcode": "add",
+        "args": [
+          "%2",
+          "%4"
+        ],
+        "result": "%5"
+      },
+      {
+        "opcode": "copy",
+        "args": [
+          "%5"
+        ],
+        "result": "%2"
+      },
+      {
+        "opcode": "print",
+        "args": [
+          "%0"
+        ],
+        "result": null
+      }
+    ]
+  }
+]

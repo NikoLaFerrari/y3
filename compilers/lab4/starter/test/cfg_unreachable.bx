@@ -1,0 +1,12 @@
+def main() {
+    var x = 10 : int;
+    if (true) {
+        print(1);
+        return; // Unconditional exit
+        
+        // The following lines are unreachable
+        x = 20; 
+        print(x);
+    }
+    print(0);
+}

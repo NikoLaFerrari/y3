@@ -1,0 +1,13 @@
+def main() {
+    var i = 0 : int;
+    var x = 0 : int;
+
+    while (i < 5) {
+        // This is NOT a dead store, even though it looks like it is overwritten 
+        // at the top of the loop, because 'print(x)' uses it first.
+        x = x + 1; 
+        
+        print(x);
+        i = i + 1;
+    }
+}

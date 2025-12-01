@@ -1,7 +1,11 @@
+#!/usr/bin/env python3
 import sys, os, json, argparse, dataclasses as dc, abc
 from typing import List, Tuple, Dict, Optional, Set
 from ply import lex, yacc
 
+# -----------------------------------------------------------------------------
+# Debug / Error helpers
+# -----------------------------------------------------------------------------
 DEBUG = False
 def dbg(msg: str):
     if DEBUG:
@@ -18,10 +22,12 @@ reserved = {
     'def':   'DEF',
     'main':  'MAIN',
     'var':   'VAR',
-    'print': 'PRINT',   
+    'print': 'PRINT',   # still a statement in Lab 3
     'int':   'INT',
+    # bool literals (no bool-typed vars yet in Lab 3)
     'true':  'TRUE',
     'false': 'FALSE',
+    # control
     'if':    'IF',
     'else':  'ELSE',
     'while': 'WHILE',
@@ -30,13 +36,17 @@ reserved = {
 }
 
 tokens = (
+    # id/lits
     'IDENT', 'NUMBER',
+    # punct
     'LPAREN','RPAREN','LBRACE','RBRACE',
     'COLON','SEMI','EQUAL',
+    # bitwise / arith
     'PLUS','MINUS','STAR','SLASH','MOD',
     'BAND','BOR','BXOR',
     'LSHIFT','RSHIFT',
     'BNOT',
+    # logical & comparisons
     'LNOT', 'LAND', 'LOR',
     'EQ', 'NE', 'LT', 'LE', 'GT', 'GE',
 ) + tuple(reserved.values())
@@ -115,6 +125,7 @@ lexer = lex.lex()
 class AST(abc.ABC):
     pass
 
+# Expressions
 class Expr(AST): pass
 
 @dc.dataclass
@@ -134,13 +145,14 @@ class EVar(Expr):
 
 @dc.dataclass
 class EUn(Expr):
-    op: str   
+    op: str   # '-', '~', '!'
     e: Expr
     ty: Optional[str] = None
 
 @dc.dataclass
 class EBin(Expr):
-    op: str       l: Expr
+    op: str   # + - * / % & | ^ << >>, == != < <= > >=, && ||
+    l: Expr
     r: Expr
     ty: Optional[str] = None
 
@@ -150,7 +162,7 @@ class Stmt(AST): pass
 @dc.dataclass
 class SVar(Stmt):
     name: str
-    init: Expr         
+    init: Expr         # ": int" always
 
 @dc.dataclass
 class SAssign(Stmt):
@@ -169,7 +181,7 @@ class SBlock(Stmt):
 class SIfElse(Stmt):
     cond: Expr
     thenb: SBlock
-    elsep: Optional[Stmt]
+    elsep: Optional[Stmt]  # either None, SBlock, or nested SIfElse for else-if chain
 
 @dc.dataclass
 class SWhile(Stmt):
@@ -250,6 +262,7 @@ def p_ifrest_empty(p):
 
 def p_ifrest_else_if(p):
     'ifrest : ELSE stmt'
+    # stmt can be block or nested if
     p[0] = p[2]
 
 def p_stmt_while(p):
@@ -260,6 +273,7 @@ def p_stmt_block(p):
     'stmt : block'
     p[0] = p[1]
 
+# Expressions
 def p_expr_num(p):
     'expr : NUMBER'
     p[0] = ENum(p[1])
@@ -330,6 +344,7 @@ class TypeErrorBX(Exception): pass
 class SemErrorBX(Exception): pass
 
 def check_program(prog: Program):
+    # Block scope stack (enables shadowing in inner blocks)
     scope_stack: List[Set[str]] = [set()]
 
     def in_scope(name: str) -> bool:
@@ -435,6 +450,7 @@ def gen_tac(prog: Program) -> List[Dict]:
     temps, labels = TempGen(), LabelGen()
     code: List[Dict] = []
 
+    # env stack for block scopes: name -> temp
     env_stack: List[Dict[str,str]] = [ {} ]
 
     def env_lookup(name: str) -> str:
@@ -445,6 +461,9 @@ def gen_tac(prog: Program) -> List[Dict]:
     def env_bind(name: str, temp: str):
         env_stack[-1][name] = temp
 
+    # -------------------------------------------------------------------------
+    # expression helpers
+    # -------------------------------------------------------------------------
     def emit_int(e: Expr) -> Tuple[str,List[Dict]]:
         if isinstance(e, ENum):
             t=temps.fresh(); return t, [tconst(e.n,t)]
@@ -462,6 +481,7 @@ def gen_tac(prog: Program) -> List[Dict]:
             l, cl = emit_int(e.l); r, cr = emit_int(e.r)
             t = temps.fresh()
             return t, cl + cr + [tbin(BINOPS[e.op], l, r, t)]
+        # bool → int materialization (0/1)
         if isinstance(e, (EBool,EUn,EBin)) and e.ty=="bool":
             t = temps.fresh()
             L1, L2, Lend = labels.fresh(), labels.fresh(), labels.fresh()
@@ -497,9 +517,7 @@ def gen_tac(prog: Program) -> List[Dict]:
             l, cl = emit_int(e.l); r, cr = emit_int(e.r)
             t = temps.fresh()
             diff = temps.fresh()
-            c = cl + cr + [tconst(0,t), tbin('sub', l, r, diff),
-                           {"opcode":"cmpflag", "args":[diff, e.op], "result":None},
-                           {"opcode":"br_cmp_true", "args":[diff, e.op, labels.fresh()], "result":None}]
+            # Fallback materialisation: use the conditional branch to build 0/1
             Ltrue, Lfalse, Lend = labels.fresh(), labels.fresh(), labels.fresh()
             c = cl + cr + [tconst(0,t), tbin('sub', l, r, diff),
                            {"opcode":"cmpflag", "args":[diff, e.op], "result":None},
@@ -544,7 +562,11 @@ def gen_tac(prog: Program) -> List[Dict]:
         a, ca = emit_int(e)
         out += ca + [tbr_true(a, Ltrue), tbr(Lfalse)]
 
-    loop_stack: List[Tuple[str,str]] = []  
+    # -------------------------------------------------------------------------
+    # statements
+    # -------------------------------------------------------------------------
+    loop_stack: List[Tuple[str,str]] = []  # (cont_label, break_label)
+
     def emit_block(b: SBlock):
         env_stack.append({})
         for st in b.ss: emit_stmt(st)
@@ -553,8 +575,6 @@ def gen_tac(prog: Program) -> List[Dict]:
     def emit_stmt(s: Stmt):
         nonlocal code
         if isinstance(s, SVar):
-            t = TempGen().fresh()   
-            t = t  
             t = temps.fresh()
             env_bind(s.name, t)
             v, cv = emit_int(s.init)
@@ -608,11 +628,268 @@ def gen_tac(prog: Program) -> List[Dict]:
     return [{"proc":"@main", "body": code}]
 
 # =============================================================================
+# CONTROL-FLOW GRAPH (Lab 4)
+# =============================================================================
+
+@dc.dataclass
+class BasicBlock:
+    name: str
+    instrs: List[Dict]
+    succs: Set[str]
+    preds: Set[str]
+
+def _is_temp(x: object) -> bool:
+    return isinstance(x, str) and x.startswith('%') and not x.startswith('%.L')
+
+def build_cfg_for_proc(proc: Dict) -> Tuple[str, Dict[str,BasicBlock], List[str]]:
+    """
+    Build a CFG for a single TAC procedure.
+    Returns (entry_block_name, blocks_by_name, order_list).
+    """
+    body: List[Dict] = proc["body"]
+    blocks: List[BasicBlock] = []
+
+    i = 0
+    n = len(body)
+    bid = 0
+
+    def new_block_name(prefix: str = "%.B") -> str:
+        nonlocal bid
+        name = f"{prefix}{bid}"
+        bid += 1
+        return name
+
+    while i < n:
+        # Determine block name.
+        # If the block starts with a label, we can use a generated name 
+        # and map the label later.
+        name = new_block_name()
+
+        instrs: List[Dict] = []
+        
+        # 1. Handle the block starting with a label
+        if i < n and body[i]["opcode"] == "label":
+            instrs.append(body[i])
+            i += 1
+
+        # 2. Collect instructions until branch, return, or the NEXT label
+        while i < n:
+            # FIX: Check if the *current* instruction is a label (start of NEW block)
+            # If so, break immediately so it is processed in the next outer iteration
+            if body[i]["opcode"] == "label":
+                break
+
+            op = body[i]["opcode"]
+            instrs.append(body[i])
+            i += 1
+            
+            # These opcodes end the current basic block
+            if op in ("br", "br_if_true", "br_if_false", "br_cmp2", "br_cmp_true", "ret"):
+                break
+
+        # Only add the block if it's not empty (or it's just a label which is fine)
+        if instrs:
+            blocks.append(BasicBlock(name=name, instrs=instrs,
+                                     succs=set(), preds=set()))
+
+    # Map labels -> block names.
+    label2block: Dict[str,str] = {}
+    for b in blocks:
+        # A block might contain multiple consecutive labels at the top, 
+        # though current partitioning logic usually splits them. 
+        # We check the first instruction.
+        if b.instrs and b.instrs[0]["opcode"] == "label":
+            label = b.instrs[0]["args"][0]
+            label2block[label] = b.name
+
+    # Compute succs (control-flow).
+    for idx, b in enumerate(blocks):
+        last_real = None
+        # Find the last non-label instruction
+        for ins in reversed(b.instrs):
+            if ins["opcode"] != "label":
+                last_real = ins
+                break
+        
+        succs: Set[str] = set()
+        
+        # Logic to determine where execution goes next
+        if last_real is not None:
+            op = last_real["opcode"]
+            args = last_real.get("args", [])
+            
+            if op == "br":
+                target = args[0]
+                if target in label2block:
+                    succs.add(label2block[target])
+            elif op in ("br_if_true", "br_if_false"):
+                cond, target = args
+                if target in label2block:
+                    succs.add(label2block[target])
+                # Conditional branches also fall through to the next block
+                if idx + 1 < len(blocks):
+                    succs.add(blocks[idx+1].name)
+            elif op == "br_cmp2":
+                diff, relop, Lt, Lf = args
+                if Lt in label2block: succs.add(label2block[Lt])
+                if Lf in label2block: succs.add(label2block[Lf])
+            elif op == "br_cmp_true":
+                diff, relop, Lt = args
+                if Lt in label2block: succs.add(label2block[Lt])
+                if idx + 1 < len(blocks):
+                    succs.add(blocks[idx+1].name)
+            elif op == "ret":
+                # ret has NO successors
+                pass
+            else:
+                # Arithmetic/Print/etc falls through
+                if idx + 1 < len(blocks):
+                    succs.add(blocks[idx+1].name)
+        else:
+            # Block contained only labels (or empty), falls through
+            if idx + 1 < len(blocks):
+                succs.add(blocks[idx+1].name)
+
+        b.succs = succs
+
+    # Fill preds.
+    name2block: Dict[str,BasicBlock] = {b.name: b for b in blocks}
+    for b in blocks:
+        for s in b.succs:
+            if s in name2block:
+                name2block[s].preds.add(b.name)
+
+    # Entry block = first block.
+    entry = blocks[0].name if blocks else ""
+    order = [b.name for b in blocks]
+    return entry, name2block, order
+
+def dump_cfg(entry: str, blocks: Dict[str,BasicBlock], order: List[str]) -> None:
+    print(f"ENTRY {entry}")
+    for name in order:
+        b = blocks[name]
+        succs = ", ".join(sorted(b.succs))
+        preds = ", ".join(sorted(b.preds))
+        print(f"BLOCK {name}:")
+        print(f"  succs: {succs}")
+        print(f"  preds: {preds}")
+
+# =============================================================================
+# LIVENESS ANALYSIS (Lab 5)
+# =============================================================================
+
+def _inst_uses_defs(ins: Dict) -> Tuple[Set[str], Set[str]]:
+    op = ins["opcode"]
+    args = ins.get("args", [])
+    r = ins.get("result")
+
+    uses: Set[str] = set()
+    defs: Set[str] = set()
+
+    if op == "label":
+        return uses, defs
+
+    if op == "br":
+        # only label
+        return uses, defs
+    if op in ("br_if_true", "br_if_false"):
+        cond = args[0]
+        if _is_temp(cond):
+            uses.add(cond)
+        return uses, defs
+    if op == "cmpflag":
+        diff = args[0]
+        if _is_temp(diff):
+            uses.add(diff)
+        return uses, defs
+    if op == "br_cmp2":
+        diff = args[0]
+        if _is_temp(diff):
+            uses.add(diff)
+        return uses, defs
+    if op == "br_cmp_true":
+        diff = args[0]
+        if _is_temp(diff):
+            uses.add(diff)
+        return uses, defs
+
+    # generic arithmetic / copy / const / print etc.
+    for a in args:
+        if _is_temp(a):
+            uses.add(a)
+    if _is_temp(r):
+        defs.add(r)
+    return uses, defs
+
+def liveness(blocks: Dict[str,BasicBlock],
+             order: List[str]) -> Tuple[Dict[str,Set[str]], Dict[str,Set[str]]]:
+    """
+    Standard backward dataflow liveness on CFG blocks.
+    Returns (live_in, live_out) maps keyed by block name.
+    """
+    use: Dict[str,Set[str]] = {}
+    defs: Dict[str,Set[str]] = {}
+
+    # Block-level use/def
+    for name in order:
+        b = blocks[name]
+        u: Set[str] = set()
+        d: Set[str] = set()
+        for ins in b.instrs:
+            uses_i, defs_i = _inst_uses_defs(ins)
+            # use[b] ∪= uses_i \ d
+            u |= (uses_i - d)
+            # defs[b] ∪= defs_i
+            d |= defs_i
+        use[name] = u
+        defs[name] = d
+
+    live_in: Dict[str,Set[str]] = {name:set() for name in order}
+    live_out: Dict[str,Set[str]] = {name:set() for name in order}
+
+    changed = True
+    while changed:
+        changed = False
+        # iterate in reverse order for faster convergence, but any order works
+        for name in reversed(order):
+            b = blocks[name]
+            old_in = live_in[name].copy()
+            old_out = live_out[name].copy()
+
+            # out[b] = ⋃ in[s] over successors
+            out_b: Set[str] = set()
+            for s in b.succs:
+                out_b |= live_in[s]
+            live_out[name] = out_b
+
+            # in[b] = use[b] ∪ (out[b] \ def[b])
+            live_in[name] = use[name] | (out_b - defs[name])
+
+            if live_in[name] != old_in or live_out[name] != old_out:
+                changed = True
+
+    return live_in, live_out
+
+def dump_liveness(entry: str,
+                  blocks: Dict[str,BasicBlock],
+                  order: List[str],
+                  live_in: Dict[str,Set[str]],
+                  live_out: Dict[str,Set[str]]) -> None:
+    print(f"ENTRY {entry}")
+    for name in order:
+        b = blocks[name]
+        print(f"BLOCK {name}:")
+        print(f"  succs: {', '.join(sorted(b.succs))}")
+        print(f"  in:   {', '.join(sorted(live_in[name]))}")
+        print(f"  out:  {', '.join(sorted(live_out[name]))}")
+
+# =============================================================================
 # TAC -> x64 (Linux SysV ABI)
 # =============================================================================
 
 def tac_to_x64(tac: List[Dict], out_s: str):
-    body = tac[0]["body"]
+    body = tac[0]["body"]  # single @main
+    # collect temps (exclude labels)
     temps: Set[str] = set()
     labels: Set[str] = set()
     for ins in body:
@@ -636,7 +913,7 @@ def tac_to_x64(tac: List[Dict], out_s: str):
 
     max_id = max([tid(t) for t in temps], default=-1)
     nslots = max_id + 1
-    if nslots % 2 == 1: nslots += 1   
+    if nslots % 2 == 1: nslots += 1   # 16-byte alignment
 
     def slot(t:str)->int:
         i = tid(t) + 1
@@ -680,7 +957,7 @@ def tac_to_x64(tac: List[Dict], out_s: str):
         if op == "mul":
             a, b = args
             load(a, "%r11")
-            emit(f"  imulq {slot(b)}(%rbp), %r11")   
+            emit(f"  imulq {slot(b)}(%rbp), %r11")   # two-operand signed multiply
             store("%r11", r)
             continue
         if op in ("shl","shr"):
@@ -726,6 +1003,7 @@ def tac_to_x64(tac: List[Dict], out_s: str):
     with open(out_s, "w", encoding="utf-8") as f:
         f.write("\n".join(lines)+"\n")
 
+
 # =============================================================================
 # DRIVER
 # =============================================================================
@@ -744,11 +1022,18 @@ def parse_text(src: str) -> Optional[Program]:
 
 def main():
     global DEBUG
-    ap = argparse.ArgumentParser(description="BX Lab 3 → x64")
+    ap = argparse.ArgumentParser(description="BX Labs 3–5 driver")
     ap.add_argument("source", help=".bx file")
-    ap.add_argument("--keep-tac", action="store_true", help="also dump TAC JSON next to .s")
-    ap.add_argument("--debug", action="store_true", help="enable debug prints")
+    ap.add_argument("--keep-tac", action="store_true",
+                    help="also dump TAC JSON next to .s")
+    ap.add_argument("--dump-cfg", action="store_true",
+                    help="Lab4: build CFG from TAC and print it")
+    ap.add_argument("--dump-liveness", action="store_true",
+                    help="Lab5: run liveness analysis on CFG and print in/out sets")
+    ap.add_argument("--debug", action="store_true",
+                    help="enable debug prints")
     args = ap.parse_args()
+
     DEBUG = args.debug or (os.environ.get("BX_DEBUG","") not in ("", "0", "false", "False"))
 
     try:
@@ -776,6 +1061,17 @@ def main():
     except Exception as e:
         err("Codegen", f"{e}")
         sys.exit(1)
+
+    # If Lab4 / Lab5 modes requested, run analyses instead of x64 backend.
+    if args.dump_cfg or args.dump_liveness:
+        proc = tac[0]   # only @main for now
+        entry, blocks, order = build_cfg_for_proc(proc)
+        if args.dump_cfg:
+            dump_cfg(entry, blocks, order)
+        if args.dump_liveness:
+            live_in, live_out = liveness(blocks, order)
+            dump_liveness(entry, blocks, order, live_in, live_out)
+        return
 
     base = os.path.splitext(args.source)[0]
     if args.keep_tac:
