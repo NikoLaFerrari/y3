@@ -1,0 +1,23 @@
+def apply_twice(f: function(int) -> int, x: int): int {
+    return f(f(x));
+}
+
+def main() {
+    var y = 5 : int;
+    
+    // Nested function (no capture)
+    def increment(n: int): int {
+        return (n + 1);
+    }
+    
+    // Nested function (with capture of 'y')
+    def add_y(n: int): int {
+        return (n + y);
+    }
+
+    // Test 1: Pass nested function (no capture)
+    print(apply_twice(increment, 10)); // Expected: 12
+    
+    // Test 2: Pass nested function (with capture)
+    print(apply_twice(add_y, 16));     // Expected: 26
+}

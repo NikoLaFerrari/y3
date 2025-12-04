@@ -1,0 +1,13 @@
+def main() {
+  var c = 837799 : int;
+
+  while (true) {
+    print(c);
+    if (c == 1) { break; } // Exit condition
+    if (c % 2 == 0) { // Even
+      c = c / 2;
+    } else { // Odd
+      c = 3 * c + 1;
+    }
+  }
+}

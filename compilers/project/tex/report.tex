@@ -1,0 +1,353 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  breaklines=true,
+}
+
+\title{BX Project -- Part 01--03 (Parsing and Front-End)}
+\author{Jagan Koipalil\\ Compilers \quad 2026}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+
+In this report I describe the changes made in \texttt{bxc.py} (implemented in the file \texttt{bxc\_v2.py}) to satisfy the requirements of the project parts 01--03:
+
+\begin{itemize}[nosep]
+  \item Extend the BX language with function types and nested procedure definitions.
+  \item Extend the type checker to support higher--order parameters while keeping returns and local variables first--order.
+  \item Compute variable capture sets for nested procedures, using a unique identifier for each variable binding.
+\end{itemize}
+
+At this stage there is \emph{no change} to the intermediate representation or code generation: the work is purely on the front--end (parsing and static analysis). The implementation remains backwards--compatible with the original Lab~3/4 test programs.
+
+\section{Language Extensions}
+
+\subsection{Function Types}
+
+The language now supports higher--order function types in parameter position. Syntactically, a function type is written
+\[
+  \texttt{function(}T_1,\dots,T_n\texttt{) -> }R
+\]
+with the following constraints:
+\begin{itemize}[nosep]
+  \item Each argument type $T_i$ may itself be a function type, allowing arbitrarily nested higher--order types.
+  \item The result type $R$ must be \emph{first--order}: one of \texttt{int}, \texttt{bool}, or \texttt{void}.
+\end{itemize}
+
+These types are represented in the AST by the type
+\begin{lstlisting}[language=Python]
+Ty = Union[str, FunTy]
+
+@dataclass(frozen=True)
+class FunTy(AST):
+    param_tys: Tuple[Ty, ...]
+    ret_ty: str  # 'int' | 'bool' | 'void'
+\end{lstlisting}
+
+The grammar is extended with a new nonterminal \texttt{type}:
+
+\begin{lstlisting}[language=Python]
+def p_type_int(p):
+    'type : INT'
+    p[0] = 'int'
+
+def p_type_bool(p):
+    'type : BOOL'
+    p[0] = 'bool'
+
+def p_type_fun(p):
+    'type : FUNCTION LPAREN type_list_opt RPAREN ARROW funrettype'
+    p[0] = FunTy(tuple(p[3]), p[6])
+\end{lstlisting}
+
+Here \texttt{funrettype} is restricted to \texttt{int}, \texttt{bool} or \texttt{void}, enforcing that function return types are first--order.
+
+\subsection{Placement of Function Types}
+
+The type checker enforces the placement constraints:
+
+\begin{itemize}[nosep]
+  \item \textbf{Parameters:} may be first--order or function types, recursively.
+  \item \textbf{Return types:} first--order only (\texttt{int}, \texttt{bool}, \texttt{void}).
+  \item \textbf{Local variables:} only first--order, and in this fragment only \texttt{int} and \texttt{bool} are allowed.
+\end{itemize}
+
+This is captured by predicates:
+\begin{lstlisting}[language=Python]
+def is_first_order_type(ty: Ty) -> bool:
+    return isinstance(ty, str) and ty in ('int', 'bool', 'void')
+
+def is_valid_param_type(ty: Ty) -> bool:
+    if isinstance(ty, str):
+        return ty in ('int', 'bool')
+    if isinstance(ty, FunTy):
+        return all(is_valid_param_type(pt) for pt in ty.param_tys) \
+               and is_first_order_type(ty.ret_ty)
+    return False
+\end{lstlisting}
+
+and by explicit checks in parameter, local variable, and return type positions.
+
+\subsection{Nested Procedure Definitions}
+
+The language now allows nested procedures via a new statement form:
+\begin{lstlisting}[language=Python]
+@dataclass
+class SProcDef(Stmt):
+    proc: ProcDecl
+\end{lstlisting}
+
+The grammar contains:
+\begin{lstlisting}[language=Python]
+def p_stmt_procdef(p):
+    'stmt : DEF IDENT LPAREN params RPAREN ret_annot block'
+    p[0] = SProcDef(ProcDecl(p[2], p[4], p[6], p[7]))
+\end{lstlisting}
+
+so any block can contain inner definitions of the form
+\begin{lstlisting}
+def inner(x: int): int {
+  ...
+}
+\end{lstlisting}
+
+Inner procedures are lexically scoped: they can see surrounding parameters and local variables according to the usual block structure.
+
+To handle braces as statements (e.g.\ in \texttt{if} or \texttt{while}), I also added the rule:
+\begin{lstlisting}[language=Python]
+def p_stmt_block(p):
+    'stmt : block'
+    p[0] = p[1]
+\end{lstlisting}
+
+\subsection{Syntactic Niceties and Backwards Compatibility}
+
+To maintain compatibility with the lab tests:
+
+\begin{itemize}[nosep]
+  \item I treat \texttt{ret;} as shorthand for \texttt{return;} via:
+\begin{lstlisting}[language=Python]
+reserved['ret'] = 'RET'
+
+def p_stmt_ret_short(p):
+    'stmt : RET SEMI'
+    p[0] = SReturn(None)
+\end{lstlisting}
+  \item I resolve the dangling-\texttt{else} ambiguity using precedence:
+\begin{lstlisting}[language=Python]
+precedence = (
+    ...,
+    ('right', 'ELSE'),
+)
+
+def p_stmt_if(p):
+    'stmt : IF LPAREN expr RPAREN stmt %prec ELSE'
+    p[0] = SIfElse(p[3], p[5], None)
+
+def p_stmt_if_else(p):
+    'stmt : IF LPAREN expr RPAREN stmt ELSE stmt'
+    p[0] = SIfElse(p[3], p[5], p[7])
+\end{lstlisting}
+\end{itemize}
+
+All original Lab~3/4 test cases (\texttt{cfg\_diamond.bx}, \texttt{cfg\_loop\_break.bx}, etc.) still parse and type--check.
+
+\section{Type Checker Extensions}
+
+\subsection{Environments and Function Values}
+
+There are now two kinds of environments:
+
+\begin{itemize}[nosep]
+  \item \textbf{Variable environments} \texttt{var\_env\_stack}: a stack of frames mapping variable names to pairs
+    \((\textit{type}, \textit{varID})\).
+  \item \textbf{Function environments} \texttt{fun\_env\_stack}: a stack of frames mapping function names to \texttt{FunTy}.
+\end{itemize}
+
+Top--level procedures are collected in a global \texttt{fun\_env\_global} mapping from name to \texttt{FunTy}. The entry point \texttt{main} must be present.
+
+Every \texttt{def} (top--level or nested) introduces a \emph{function value} of type \texttt{FunTy}. Calls are allowed whenever an expression has a function type:
+\begin{itemize}[nosep]
+  \item \texttt{x(...)} where \texttt{x} is a function--typed variable (parameter or captured outer variable).
+  \item \texttt{f(...)} where \texttt{f} is a function name present in the function environment.
+\end{itemize}
+
+The type checker enforces that arguments match parameter types and that the declared return type is respected on all paths (for non--void functions).
+
+The built--in \texttt{print} is treated specially:
+\begin{itemize}[nosep]
+  \item \texttt{print(e)} is rewritten to \texttt{\_\_bx\_print\_int(e)} or \texttt{\_\_bx\_print\_bool(e)} depending on the type of \texttt{e}.
+  \item \texttt{print} returns \texttt{void}.
+\end{itemize}
+
+\subsection{Lexical Scope and Nested Definitions}
+
+For each procedure \texttt{ProcDecl}, including nested ones, I invoke:
+\begin{lstlisting}[language=Python]
+typecheck_proc(pd, fun_ty, outer_var_env, fun_env_stack)
+\end{lstlisting}
+
+where:
+\begin{itemize}[nosep]
+  \item \texttt{outer\_var\_env} is a list of variable environment frames visible from outside the procedure (its lexical context).
+  \item \texttt{fun\_env\_stack} is the function environment visible inside the procedure.
+\end{itemize}
+
+Within \texttt{typecheck\_proc}:
+\begin{itemize}[nosep]
+  \item The parameters are added as a new frame with fresh variable IDs.
+  \item New locals are introduced in the top frame of \texttt{var\_env\_stack}.
+  \item Nested \texttt{def} statements are type--checked in a fresh copy of the current environments; once successfully checked, the nested function is bound in the current function environment for subsequent statements.
+\end{itemize}
+
+This ordering ensures that:
+\begin{itemize}[nosep]
+  \item Top--level recursion is allowed (procedures see each other through the global environment).
+  \item Nested procedures cannot be recursive or mutually recursive: the body of a nested procedure is type--checked before the procedure's name is inserted into the function environment of its enclosing scope.
+\end{itemize}
+
+\subsection{First--Order Restrictions}
+
+The type checker enforces that:
+\begin{itemize}[nosep]
+  \item Procedure results are first--order (\texttt{int}/\texttt{bool}/\texttt{void}).
+  \item Local variables \texttt{var x = ... : T;} are restricted to \texttt{T} equal to \texttt{int} or \texttt{bool}. Attempting to declare a function--typed local variable is rejected.
+  \item Non--void procedures must return on all control--flow paths; this is checked using a boolean flag returned by the statement checker.
+\end{itemize}
+
+\section{Variable Identifiers and Capture Sets}
+
+\subsection{Unique Variable IDs}
+
+To follow the specification's recommendation, each variable binding (parameter or local) is assigned a unique integer identifier (\texttt{vid}):
+
+\begin{lstlisting}[language=Python]
+next_var_id = 0
+def fresh_var_id() -> int:
+    nonlocal next_var_id
+    vid = next_var_id
+    next_var_id += 1
+    return vid
+\end{lstlisting}
+
+The AST nodes are extended with these IDs:
+\begin{lstlisting}[language=Python]
+@dataclass
+class Param(AST):
+    name: str
+    ty: Ty
+    vid: int = -1
+
+@dataclass
+class SVar(Stmt):
+    name: str
+    init: Expr
+    ty_annot: Ty
+    vid: int = -1
+\end{lstlisting}
+
+When parameters and local variables are inserted into the environment, they are assigned a fresh \texttt{vid}. Variable expressions \texttt{EVar(name)} look up the corresponding pair \((\textit{type}, \textit{vid})\) in the environment.
+
+\subsection{Definition of Captures}
+
+Each \texttt{ProcDecl} now has a field:
+\begin{lstlisting}[language=Python]
+@dataclass
+class ProcDecl(AST):
+    name: str
+    params: List[Param]
+    ret_ty: Ty
+    body: SBlock
+    captures: Set[int] = field(default_factory=set)
+\end{lstlisting}
+
+The set \texttt{captures} is defined as follows: a procedure $P$ captures a variable with ID $v$ iff:
+\begin{itemize}[nosep]
+  \item $v$ is declared in a lexically enclosing scope, i.e.\ not in the parameter or local frames of $P$ itself, and
+  \item $P$ reads from, writes to, or calls a function via that variable.
+\end{itemize}
+
+Concretely:
+\begin{itemize}[nosep]
+  \item We maintain a set \texttt{local\_ids} containing all variable IDs declared as parameters or locals of the current procedure.
+  \item Whenever we resolve a variable occurrence \texttt{EVar(name)} or the LHS of an assignment:
+    \begin{itemize}[nosep]
+      \item We look up its \texttt{vid}.
+      \item If \texttt{vid} is \emph{not} in \texttt{local\_ids}, we add it to \texttt{pd.captures}.
+    \end{itemize}
+  \item Function--typed variables used as callees (e.g.\ \texttt{f(x)} where \texttt{f} is a parameter of function type) are treated identically: if \texttt{f} comes from an outer scope, its ID is added to the capture set.
+\end{itemize}
+
+This definition agrees with the intuitive notion of a \emph{captured} variable: variables of the enclosing scopes that must remain live as long as the function value exists.
+
+\subsection{Inspecting Captures}
+
+For debugging, I added a \texttt{--dump-captures} mode. It first builds a mapping from variable IDs to names by walking parameters and local declarations, and then prints for each procedure:
+\begin{lstlisting}
+def <name> captures {x, y, ...}
+\end{lstlisting}
+with indentation reflecting nesting. For example, for:
+\begin{lstlisting}
+def apply_twice(f : function(int) -> int, x: int) : int {
+  return f(f(x));
+}
+
+def main() {
+  var y = 5 : int;
+
+  def increment(n: int): int {
+    return n + 1;
+  }
+
+  def add_y(n: int): int {
+    return n + y;
+  }
+
+  print(apply_twice(increment, 10));
+  print(apply_twice(add_y, 16));
+}
+\end{lstlisting}
+
+the compiler reports:
+\begin{lstlisting}
+def apply_twice captures {}
+def main captures {}
+  def increment captures {}
+  def add_y captures {y}
+\end{lstlisting}
+
+which matches the expected capture behaviour: only \texttt{add\_y} uses the outer variable \texttt{y}, and none of the procedures capture \texttt{x} or \texttt{f} because these are parameters of their own scopes.
+
+\section{Testing and Compatibility}
+
+I tested the implementation on:
+\begin{itemize}[nosep]
+  \item The original Lab~3/4 tests: \texttt{cfg\_loop\_break.bx}, \texttt{cfg\_diamond.bx}, \texttt{cfg\_unreachable.bx}, etc. All parse and type--check and the driver prints \texttt{OK}.
+  \item Higher--order examples involving function parameters, nested definitions, and different patterns of captures, verifying the reported capture sets.
+\end{itemize}
+
+The extended front--end is therefore backwards--compatible and satisfies the project requirements for parts 01--03. Later parts of the project (closure representation, static links, fat pointers, and their impact on the intermediate language and code generation) can build directly on this front--end.
+
+\section{Conclusion}
+
+In this phase I extended the BX compiler front--end to support higher--order function parameters and nested procedure definitions while preserving a first--order execution model (no functions returned or stored in variables). The type checker enforces the placement restrictions for function types and ensures sound use of function values. Each variable binding receives a unique identifier, and each procedure is annotated with an explicit capture set of outer variables it depends on.
+
+This information will be essential in the next phases of the project, where we will introduce closure representations and adapt the calling convention and code generation to handle higher--order functions efficiently without violating the stack discipline.
+
+\end{document}
+

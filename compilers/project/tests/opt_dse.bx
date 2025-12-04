@@ -1,0 +1,9 @@
+// Dead Store Elimination
+def main() {
+  var x = 0 : int;
+  x = 100; // Dead
+  x = 200; // Dead
+  x = 300; // Live
+  print(x);
+  x = 400; // Dead
+}

@@ -1,0 +1,12 @@
+// Unreachable Code Elimination
+def main() {
+  var x = 10 : int;
+  if (true) {
+    print(1);
+    ret;
+    // Dead code below
+    x = 20; 
+    print(x);
+  }
+  print(0);
+}
