@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# remove_print_decl.sh
+# Remove the line "extern def print(n : int);" from all files in this directory
+
+set -euo pipefail
+
+target='extern def print(n : int);'
+
+for f in *; do
+  # skip non-regular files
+  [[ -f "$f" ]] || continue
+
+  # delete the line that matches exactly
+  sed -i "/^$target$/d" "$f"
+done
+

@@ -1,0 +1,18 @@
+
+def main() {
+    var x = 100 : int;
+    
+    def outer() {
+        var y = 10 : int;
+        
+        def inner() {
+            x = x + y;
+        }
+        
+        inner();
+    }
+    
+    print(x);
+    outer();
+    print(x);
+}

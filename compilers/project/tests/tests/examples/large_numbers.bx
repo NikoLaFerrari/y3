@@ -1,0 +1,7 @@
+// Test integer overflow behavior
+
+def main() {
+  var large = 1000000 : int;
+  var result = large * large : int;
+  print(result);
+}

@@ -1,0 +1,8 @@
+
+def main() {
+    var x = 22 : int;
+    var y = 95 : int;
+    var res = 0 : int;
+    res = x - y;
+    print(res);
+}

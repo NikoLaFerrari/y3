@@ -1,0 +1,10 @@
+
+def main() {
+    var x = 14 : int;
+    
+    def inner(y: int): int {
+        return x + y;
+    }
+    
+    print(inner(5));
+}

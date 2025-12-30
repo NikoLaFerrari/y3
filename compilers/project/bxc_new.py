@@ -43,8 +43,10 @@ reserved = {
     'break': 'BREAK',
     'continue': 'CONTINUE',
     'return': 'RETURN',
-    'ret':   'RET',      # short form for "return;"
+    'ret':   'RET',
+    'extern': 'EXTERN',
 }
+
 
 tokens = (
     'IDENT', 'NUM',
@@ -274,8 +276,8 @@ class ProcDecl(AST):
 
 @dc
 class Program(AST):
+    globals: List[SVar]
     procs: List[ProcDecl]
-
 
 # =============================================================================
 # PARSER
@@ -294,9 +296,39 @@ precedence = (
 
 
 def p_program(p):
-    'program : procs'
-    p[0] = Program(p[1])
+    'program : decls'
+    globals = []
+    procs = []
+    for d in p[1]:
+        if isinstance(d, SVar):
+            globals.append(d)
+        else:
+            procs.append(d)
+    p[0] = Program(globals, procs)
 
+def p_decls_one(p):
+    'decls : decl'
+    if isinstance(p[1], list): p[0] = p[1]
+    else: p[0] = [p[1]]
+
+def p_decls_many(p):
+    'decls : decls decl'
+    if isinstance(p[2], list): p[1].extend(p[2])
+    else: p[1].append(p[2])
+    p[0] = p[1]
+
+def p_decl_proc(p):
+    'decl : proc'
+    p[0] = p[1]
+
+def p_decl_global_vardecl(p):
+    'decl : VAR var_inits COLON type SEMI'
+    # identical to local, just stored as SVar statements at top-level
+    p[0] = [SVar(name, init, p[4]) for (name, init) in p[2]]
+
+def p_decl_extern(p):
+    'decl : EXTERN DEF IDENT LPAREN params RPAREN SEMI'
+    p[0] = ProcDecl(p[3], p[5], 'void', SBlock([]))
 
 def p_procs_single(p):
     'procs : proc'
@@ -322,18 +354,30 @@ def p_params_empty(p):
 
 
 def p_params_nonempty(p):
-    'params : param_list'
+    'params : param_groups'
     p[0] = p[1]
 
+# param_groups : one or more param_group separated by commas
+def p_param_groups_one(p):
+    'param_groups : param_group'
+    p[0] = p[1]
 
-def p_param_list_one(p):
-    'param_list : IDENT COLON type'
-    p[0] = [Param(p[1], p[3])]
+def p_param_groups_cons(p):
+    'param_groups : param_groups COMMA param_group'
+    p[0] = p[1] + p[3]
 
+# param_group : IDENT ("," IDENT)* ":" type
+def p_param_group(p):
+    'param_group : ident_list COLON type'
+    p[0] = [Param(name, p[3]) for name in p[1]]
 
-def p_param_list_cons(p):
-    'param_list : param_list COMMA IDENT COLON type'
-    p[1].append(Param(p[3], p[5]))
+def p_ident_list_one(p):
+    'ident_list : IDENT'
+    p[0] = [p[1]]
+
+def p_ident_list_cons(p):
+    'ident_list : ident_list COMMA IDENT'
+    p[1].append(p[3])
     p[0] = p[1]
 
 
@@ -410,21 +454,37 @@ def p_stmt_list_empty(p):
     p[0] = []
 
 
-def p_stmt_list_cons(p):
-    'stmt_list : stmt_list stmt'
-    p[1].append(p[2])
-    p[0] = p[1]
-
-
 def p_stmt_procdef(p):
     'stmt : DEF IDENT LPAREN params RPAREN ret_annot block'
     p[0] = SProcDef(ProcDecl(p[2], p[4], p[6], p[7]))
 
 
-def p_stmt_vardecl(p):
-    'stmt : VAR IDENT EQUAL expr COLON type SEMI'
-    p[0] = SVar(p[2], p[4], p[6])
+def p_stmt_list_cons(p):
+    'stmt_list : stmt_list stmt'
+    # p[2] can be a single Stmt or a list of Stmt (for multi-var decls)
+    if isinstance(p[2], list):
+        p[1].extend(p[2])
+    else:
+        p[1].append(p[2])
+    p[0] = p[1]
 
+
+def p_stmt_vardecl(p):
+    'stmt : VAR var_inits COLON type SEMI'
+    # p[2] is a list of (name, init_expr)
+    vars = [SVar(name, init, p[4]) for (name, init) in p[2]]
+    p[0] = vars   # NOTE: returns a *list* of statements
+
+
+def p_var_inits_single(p):
+    'var_inits : IDENT EQUAL expr'
+    p[0] = [(p[1], p[3])]
+
+
+def p_var_inits_many(p):
+    'var_inits : var_inits COMMA IDENT EQUAL expr'
+    p[1].append((p[3], p[5]))
+    p[0] = p[1]
 
 def p_stmt_assign(p):
     'stmt : IDENT EQUAL expr SEMI'
@@ -628,6 +688,21 @@ def check_program(prog: Program) -> None:
         vid = next_var_id
         next_var_id += 1
         return vid
+
+    # --- Global variable environment (top-level vars) ------------------------
+    global_var_frame: Dict[str, VarInfo] = {}
+
+    for gv in prog.globals:
+        if gv.name in global_var_frame:
+            raise SemErrorBX(f"Global variable '{gv.name}' redeclared")
+        # Only int/bool globals for now
+        if not (isinstance(gv.ty_annot, str) and gv.ty_annot in ('int', 'bool')):
+            raise TypeErrorBX(
+                f"Global variable '{gv.name}' must be of type int or bool"
+            )
+        vid = fresh_var_id()
+        gv.vid = vid
+        global_var_frame[gv.name] = (gv.ty_annot, vid)
 
     # -------------------------------------------------------------------------
     # Procedure type-checking (top-level and nested) with capture sets
@@ -942,6 +1017,10 @@ def check_program(prog: Program) -> None:
     for pd in prog.procs:
         fun_ty = fun_env_global[pd.name]
         outer_var_env: List[Dict[str, VarInfo]] = []
+        
+        if global_var_frame:
+            outer_var_env.append(global_var_frame)
+
         fun_env_stack: List[Dict[str, FunTy]] = [dict(fun_env_global)]
 
         all_paths = typecheck_proc(pd, fun_ty, outer_var_env, fun_env_stack)
@@ -1067,6 +1146,9 @@ class TacGenerator:
         self.proc_parent: Dict[str, Optional[str]] = {}
         self.proc_mangled: Dict[str, str] = {}  
         self.vid_depth: Dict[int, int] = {}     
+
+        # NEW: Global Variable Map
+        self.globals: Dict[str, int] = {g.name: g.vid for g in prog.globals}
         
         # Context State
         self.current_proc_name: str = ""
@@ -1154,8 +1236,19 @@ class TacGenerator:
 
         # 3. Setup Scope for Parameters
         self._env_push()
+        param_temps = []
         for p in pd.params:
-            self._env_decl(p.name, p.vid)
+             t = f"%v_{p.vid}"  # Use a special naming convention
+             self._env_decl(p.name, p.vid)
+             # We also need to map the VID to this temp in case we look it up later
+             # But actually, TacSetVar uses VIDs directly. 
+             param_temps.append(t)
+             
+             # Also pre-seed the environment so compile_var_load works?
+             # Actually, TacGenerator.compile_var_load emits TacGetVar. 
+             # TacGetVar(hops=0) will read from the slot we allocated.
+        param_names = [f"%v_{p.vid}" for p in pd.params] 
+        tp = TacProc(mangled_name, param_names, body_instrs)
         
         # Local loop stack (loops do not span across function boundaries)
         loop_stack: List[Tuple[str, str]] = [] 
@@ -1165,6 +1258,7 @@ class TacGenerator:
             return self.current_depth - def_depth
 
         def compile_var_load(name: str) -> str:
+            # 1. Try Local/Static Parent Lookup
             vid = self._env_lookup(name)
             if vid is not None:
                 t = self.fresh_temp()
@@ -1172,6 +1266,15 @@ class TacGenerator:
                 emit(TacGetVar(t, vid, hops))
                 return t
             
+            # 2. NEW: Try Global Lookup
+            if name in self.globals:
+                vid = self.globals[name]
+                t = self.fresh_temp()
+                # Use hops = -1 to signal global access
+                emit(TacGetVar(t, vid, -1))
+                return t
+
+            # 3. Try Functions (Closures)
             mangled = self.proc_mangled.get(name)
             if mangled:
                 t = self.fresh_temp()
@@ -1255,8 +1358,17 @@ class TacGenerator:
             elif isinstance(s, SAssign):
                 val_t = compile_expr(s.e)
                 vid = self._env_lookup(s.name)
-                hops = get_hops(vid)
-                emit(TacSetVar(vid, hops, val_t))
+                
+                if vid is not None:
+                    # Local assignment
+                    hops = get_hops(vid)
+                    emit(TacSetVar(vid, hops, val_t))
+                elif s.name in self.globals:
+                    # NEW: Global assignment
+                    vid = self.globals[s.name]
+                    emit(TacSetVar(vid, -1, val_t)) # hops = -1 for global
+                else:
+                    raise ValueError(f"Assignment to unknown variable '{s.name}'")
             
             elif isinstance(s, SExpr):
                 compile_expr(s.e)
@@ -1335,36 +1447,55 @@ class TacGenerator:
 # =============================================================================
 
 class AsmGen:
-    def __init__(self, procs: List[TacProc]):
+    def __init__(self, prog: Program, procs: List[TacProc]):
+        self.prog = prog  # Store prog to access globals
         self.procs = procs
         self.output: List[str] = []
         self.slots: Dict[str, int] = {}
         self.current_stack_size = 0
         self.vid_offsets: Dict[int, int] = {}
+        self.global_vid_map = {g.vid: g.name for g in prog.globals}
 
     def emit(self, line: str):
         self.output.append(line)
 
     def gen_program(self) -> str:
-        self.emit(f"    .text")
-        for p in self.procs:
-            if p.is_main:
-                self.emit(f"    .globl main")
-        
-        for p in self.procs:
-            self.gen_proc(p)
+            self.emit(f"    .data")
+            # Emit global variables
+            for g in self.prog.globals:
+                # Format: .comm name, size, alignment
+                # Using glob_ prefix to avoid collisions
+                self.emit(f"    .globl glob_{g.name}")
+                self.emit(f"glob_{g.name}:")
+                self.emit(f"    .zero 8") # int/bool are 8 bytes in our impl
+                
+            self.emit(f"    .text")
+            for p in self.procs:
+                if p.is_main:
+                    self.emit(f"    .globl main")
             
-        #self.gen_runtime()
-        return "\n".join(self.output) + "\n"
+            for p in self.procs:
+                self.gen_proc(p)
+                
+            return "\n".join(self.output) + "\n"
 
     def _walk_static_link(self, hops: int, reg: str):
-        """Helper to walk up the static link chain 'hops' times into 'reg'."""
-        if hops == 0:
-            self.emit(f"    movq %rbp, {reg}")
-        else:
-            self.emit(f"    movq 16(%rbp), {reg}")
-            for _ in range(hops - 1):
-                self.emit(f"    movq 16({reg}), {reg}")
+            """
+            Follows the static link chain 'hops' times.
+            Base case (hops=0): The current frame's RBP.
+            Recursive step: The static link is stored at 24(%rbp) in the caller's frame.
+            Layout:
+              16(%rbp) -> Padding (8 bytes)
+              24(%rbp) -> Static Link
+            """
+            if hops == 0:
+                self.emit(f"    movq %rbp, {reg}")
+            else:
+                # First hop: load static link from current frame's stack args area
+                self.emit(f"    movq 24(%rbp), {reg}")
+                # Subsequent hops: walk up the chain
+                for _ in range(hops - 1):
+                    self.emit(f"    movq 24({reg}), {reg}")
 
     def gen_proc(self, proc: TacProc):
         self.emit(f"\n{proc.name}:")
@@ -1373,49 +1504,74 @@ class AsmGen:
         
         # --- Stack Analysis ---
         self.slots = {}
-        offset = 0
+        # We start allocating local slots *after* the saved RBP.
+        # Growing downwards: -8, -16, etc.
+        current_offset = 0
         
-        # 1. Map Parameters
+        # 1. Allocation for Parameters
+        # In BX, params are variables too. We map them to stack slots immediately
+        # so they can be addressed by VID or Name.
         for param in proc.params:
-            offset += 8
-            self.slots[param] = -offset
+            current_offset += 8
+            self.slots[param] = -current_offset
             
-        # 2. Map Temporaries
-        closure_count = 0
-        for instr in proc.body:
-            if hasattr(instr, 'dst') and instr.dst and instr.dst not in self.slots:
-                offset += 8
-                self.slots[instr.dst] = -offset
-            if isinstance(instr, TacMakeClosure):
-                closure_count += 1
+            # If the param is a VID (e.g. "%v_10"), record it in vid_offsets
+            # so nested functions can find it later.
+            if param.startswith("%v_"):
+                try:
+                    vid = int(param.split('_')[1])
+                    self.vid_offsets[vid] = -current_offset
+                except: pass
 
-        # 3. Allocate Closure Slots (16 bytes)
+        # 2. Allocation for Local VIDs (Captured Variables)
+        # Scan instructions for TacSetVar with hops=0. These are local definitions.
+        for instr in proc.body:
+            if isinstance(instr, TacSetVar) and instr.hops == 0:
+                if instr.vid not in self.vid_offsets:
+                    current_offset += 8
+                    self.vid_offsets[instr.vid] = -current_offset
+                    
+        # 3. Allocation for Temporaries
+        for instr in proc.body:
+            # allocate slots for destination temps (%t...)
+            if hasattr(instr, 'dst') and instr.dst and instr.dst not in self.slots:
+                current_offset += 8
+                self.slots[instr.dst] = -current_offset
+
+        # 4. Allocation for Closure Tuples (16 bytes each)
+        closure_count = sum(1 for i in proc.body if isinstance(i, TacMakeClosure))
         closure_base_offsets = []
         for _ in range(closure_count):
-            offset += 16
-            closure_base_offsets.append(-offset)
+            current_offset += 16
+            closure_base_offsets.append(-current_offset)
         
-        # 4. Alignment
-        if offset % 16 != 0:
-            offset += (16 - (offset % 16))
+        # 5. Stack Alignment (Must be multiple of 16)
+        if current_offset % 16 != 0:
+            current_offset += (16 - (current_offset % 16))
             
-        self.current_stack_size = offset
-        self.emit(f"    subq ${offset}, %rsp")
+        self.emit(f"    subq ${current_offset}, %rsp")
         
-        # --- Move Arguments ---
+        # --- Move Arguments to Stack Slots ---
+        # Arguments 1-6 are in registers. 
+        # Arguments 7+ are on the stack at 32(%rbp), 40(%rbp)...
+        # (Skip 16(%rbp)=Padding and 24(%rbp)=StaticLink)
+        
         args_regs = ['%rdi', '%rsi', '%rdx', '%rcx', '%r8', '%r9']
         for i, param in enumerate(proc.params):
-            off = self.slots[param]
+            off = self.slots[param] # Destination slot in current frame
+            
             if i < len(args_regs):
+                # Move from register to local slot
                 self.emit(f"    movq {args_regs[i]}, {off}(%rbp)")
             else:
-                src_off = 24 + (i - 6) * 8
+                # Move from caller's stack to local slot
+                # Layout: RBP(0) -> Ret(8) -> Pad(16) -> SL(24) -> Arg7(32)
+                src_off = 32 + (i - 6) * 8
                 self.emit(f"    movq {src_off}(%rbp), %rax")
                 self.emit(f"    movq %rax, {off}(%rbp)")
 
         # --- Body Generation ---
         closure_idx = 0
-        
         for instr in proc.body:
             if isinstance(instr, TacLabel):
                 self.emit(f"{instr.label}:")
@@ -1478,16 +1634,35 @@ class AsmGen:
                 self.emit(f"    jmp {instr.target_false}")
 
             elif isinstance(instr, (TacGetVar, TacSetVar)):
-                # Unified logic for accessing variables via static links
-                self._walk_static_link(instr.hops, '%rax')
-                off = self.get_vid_offset(instr.vid)
-                
-                if isinstance(instr, TacGetVar):
-                    self.emit(f"    movq {off}(%rax), %rcx")
-                    self.store_operand(instr.dst, '%rcx')
-                else: # TacSetVar
-                    self.load_operand(instr.src, '%rcx')
-                    self.emit(f"    movq %rcx, {off}(%rax)")
+                if instr.hops == -1:
+                    # GLOBAL VARIABLE ACCESS
+                    # Use RIP-relative addressing: glob_NAME(%rip)
+                    gname = self.global_vid_map.get(instr.vid)
+                    if not gname:
+                        raise ValueError(f"Unknown global VID {instr.vid}")
+                    
+                    label = f"glob_{gname}(%rip)"
+                    
+                    if isinstance(instr, TacGetVar):
+                         # dst = global
+                         self.emit(f"    movq {label}, %rcx")
+                         self.store_operand(instr.dst, '%rcx')
+                    else:
+                         # global = src
+                         self.load_operand(instr.src, '%rcx')
+                         self.emit(f"    movq %rcx, {label}")
+
+                else:
+                    # LOCAL / STATIC LINK ACCESS (Existing logic)
+                    self._walk_static_link(instr.hops, '%rax')
+                    off = self.get_vid_offset(instr.vid)
+                    
+                    if isinstance(instr, TacGetVar):
+                        self.emit(f"    movq {off}(%rax), %rcx")
+                        self.store_operand(instr.dst, '%rcx')
+                    else: # TacSetVar
+                        self.load_operand(instr.src, '%rcx')
+                        self.emit(f"    movq %rcx, {off}(%rax)")
 
             elif isinstance(instr, TacMakeClosure):
                 base_off = closure_base_offsets[closure_idx]
@@ -1505,32 +1680,56 @@ class AsmGen:
                 self.store_operand(instr.dst, '%rax')
 
             elif isinstance(instr, TacCall):
+                # 1. Determine Function Address and Static Link
                 if instr.is_indirect:
+                    # Indirect call: func holds the address of the Fat Pointer tuple
+                    # Tuple layout: [0]: code pointer, [8]: static link
                     self.load_operand(instr.func, '%r11')
-                    self.emit(f"    movq 0(%r11), %rax") # Code
-                    self.emit(f"    movq 8(%r11), %r10") # Static Link
+                    self.emit(f"    movq 0(%r11), %rax") # Code Pointer -> RAX
+                    self.emit(f"    movq 8(%r11), %r10") # Static Link -> R10
                 else:
-                    self.emit(f"    leaq {instr.func}(%rip), %rax")
+                    # Direct call: func is a label
+                    self.emit(f"    leaq {instr.func}(%rip), %rax") # Code Pointer -> RAX
                     if instr.static_link == "0":
                          self.emit(f"    movq $0, %r10")
                     else:
                          self.load_operand(instr.static_link, '%r10')
 
-                regs = ['%rdi', '%rsi', '%rdx', '%rcx', '%r8', '%r9']
-                for i, arg in enumerate(instr.args):
-                    if i < 6:
-                        self.load_operand(arg, regs[i])
-                    else:
-                        self.load_operand(arg, '%r11')
-                        self.emit(f"    pushq %r11")
+                # 2. Push Arguments to Stack (if > 6)
+                # We must push them in reverse order (Arg N ... Arg 7)
+                stack_args = instr.args[6:]
+                for arg in reversed(stack_args):
+                    self.load_operand(arg, '%r11')
+                    self.emit(f"    pushq %r11")
 
+                # 3. Push Static Link and Padding (The Critical Step)
+                # Layout requirement: [Static Link] [Padding]
+                # Stack grows down, so we push Static Link first, then Padding?
+                # Wait, PDF Fig 1 says:
+                # Top (Low addr) -> Padding -> Static Link -> Arg 1...
+                # So we push Static Link FIRST, then Padding.
+                
+                self.emit(f"    pushq %r10")  # Push Static Link (at 24(%rbp) in callee)
+                self.emit(f"    pushq $0")    # Push Padding (at 16(%rbp) in callee)
+                
+                # 4. Load Register Arguments (First 6)
+                regs = ['%rdi', '%rsi', '%rdx', '%rcx', '%r8', '%r9']
+                for i in range(min(6, len(instr.args))):
+                    self.load_operand(instr.args[i], regs[i])
+
+                # 5. Perform Call
                 self.emit(f"    call *%rax")
                 
-                if len(instr.args) > 6:
-                    self.emit(f"    addq ${(len(instr.args)-6)*8}, %rsp")
+                # 6. Clean up Stack
+                # We pushed: Padding(8) + SL(8) + StackArgs(N * 8)
+                bytes_to_pop = 16 + (len(stack_args) * 8)
+                if bytes_to_pop > 0:
+                    self.emit(f"    addq ${bytes_to_pop}, %rsp")
                     
+                # 7. Handle Return Value
                 if instr.dst:
                     self.store_operand(instr.dst, '%rax')
+
 
             elif isinstance(instr, TacRet):
                 if instr.val:
@@ -1623,39 +1822,43 @@ def main(argv: List[str]) -> None:
     ap.add_argument('--dump-tac', action='store_true')
     args = ap.parse_args(argv)
 
-    with open(args.file) as f:
-        src = f.read()
-
-    prog = parse_text(src)
     try:
+        with open(args.file) as f:
+            src = f.read()
+
+        # Phase 1: parse + typecheck
+        prog = parse_text(src)
         check_program(prog)
+
+        # Phase 2: TAC
+        vid_map = _build_vid_name_map(prog)
+        tac_gen = TacGenerator(prog)
+        tac_procs = tac_gen.gen_program()
+
+        # Phase 3: output
+        if args.dump_captures:
+            dump_captures(prog)
+        elif args.dump_ast:
+            print(prog)
+        elif args.dump_tac:
+            for proc in tac_procs:
+                print(f"PROC {proc.name}:")
+                for instr in proc.body:
+                    print(f"  {instr}")
+                print()
+        else:
+            asm_gen = AsmGen(prog, tac_procs)
+            #asm_gen.precompute_offsets()
+            asm_code = asm_gen.gen_program()
+
+            base, _ = os.path.splitext(args.file)
+            with open(base + ".s", "w") as out:
+                out.write(asm_code)
+
     except Exception as e:
+        # Make all compiler errors show up as "Error: ..."
         print(f"Error: {e}")
         return
-
-    # Phase 2: TAC
-    vid_map = _build_vid_name_map(prog)
-    tac_gen = TacGenerator(prog)
-    tac_procs = tac_gen.gen_program()
-
-    if args.dump_captures:
-        dump_captures(prog)
-    elif args.dump_ast:
-        print(prog)
-    elif args.dump_tac:
-        for proc in tac_procs:
-            print(f"PROC {proc.name}:")
-            for instr in proc.body:
-                print(f"  {instr}")
-            print()
-    else:
-        asm_gen = AsmGen(tac_procs)
-        asm_gen.precompute_offsets() 
-        asm_code = asm_gen.gen_program()
-        
-        base, _ = os.path.splitext(args.file)
-        with open(base + ".s", "w") as out:
-            out.write(asm_code)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

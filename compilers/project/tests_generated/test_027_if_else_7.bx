@@ -1,0 +1,9 @@
+
+def main() {
+    var x = 4 : int;
+    if (x < 14) {
+        print(1);
+    } else {
+        print(0);
+    }
+}

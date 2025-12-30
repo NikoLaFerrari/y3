@@ -1,0 +1,17 @@
+
+def apply(f : function() -> bool, value : int) : bool {
+    return f();
+}
+
+def main() {
+    var n = 6 : int;
+
+    def check() : bool {
+        return n > 0;
+    }
+
+    while(apply(check, n)) {
+        print(n);
+        n = n - 1;
+    }
+}

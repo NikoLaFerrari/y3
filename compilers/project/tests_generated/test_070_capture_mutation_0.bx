@@ -1,0 +1,12 @@
+
+def main() {
+    var count = 3 : int;
+    
+    def increment(): void {
+        count = count + 1;
+    }
+    
+    increment();
+    increment();
+    print(count);
+}

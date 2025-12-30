@@ -1,0 +1,14 @@
+
+def apply_func(f: function(int) -> int, arg: int): int {
+    return f(arg);
+}
+
+def main() {
+    var multiplier = 2 : int;
+    
+    def mult(x: int): int {
+        return x * multiplier;
+    }
+    
+    print(apply_func(mult, 2));
+}

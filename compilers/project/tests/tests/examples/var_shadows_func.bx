@@ -1,0 +1,10 @@
+// variable name same as function name
+
+def test() : int {
+  return 5;
+}
+
+def main() {
+  var test = 10 : int;
+  print(test);
+}

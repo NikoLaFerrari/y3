@@ -1,0 +1,1018 @@
+Testing tests/examples/accumulator.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/accumulator.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/advanced_shadowing.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/all_comparisons.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/all_comparisons.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/arithops.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token IDENT (value=extern)
+  [FAIL] Compilation error
+Testing tests/examples/bigcondition1.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bigcondition1.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/bigcondition2.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bigcondition2.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/bitops.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bitops.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/bitwise_combinations.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/bitwise_complex.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bitwise_complex.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/bool_chain.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bool_chain.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/bool_func_in_if.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bool_func_in_if.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/boolops.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/boolops.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/boolprint.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token IDENT (value=extern)
+  [FAIL] Compilation error
+Testing tests/examples/bool_with_compare.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/bool_with_compare.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/cadou_perju.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/cadou_perju.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/capture_parameter.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/capture_parameter.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/capture_swap.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/capture_swap.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/capture_through_parameter.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/capture_through_parameter.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/capture_two_from_different_levels.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/capture_two_from_different_levels.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/capture_update_between_calls.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/capture_update_between_calls.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/capture_with_read_write.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/capture_with_read_write.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/cascading_nested_calls.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/cascading_nested_calls.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/collatz.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/collatz.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/complex_arithmetic.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/complex_function_composition.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/complex_function_composition.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/complex_procs.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token IDENT (value=extern)
+  [FAIL] Compilation error
+Testing tests/examples/compose_with_captures.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/compose_with_captures.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/conditional_apply.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/conditional_apply.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/conditional_function_return.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/conditional_function_return.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/conditional_function_selection.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/conditional_function_selection.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/correct_shadowing.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/correct_shadowing.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/deep_capture_and_modify.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/deep_capture_and_modify.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/deep_capture_chain.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/deep_capture_chain.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/deep_nested_if.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/deep_nested_if.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/deep_scope.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/deep_scope.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/diagonal.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/diagonal.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/early_return.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/early_return.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/early_return_while.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/early_return_while.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/elseif.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/elseif.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/empty.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/empty.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/example_from_project_nested_func.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/example_from_project_nested_func.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/example_nested_func2.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/example_nested_func2.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/factorial_while.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/factorial_while.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/fib10.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/fib10.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/fib20.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/fib20.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/fizzbuzz.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/four_func_params.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/four_func_params.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/free_vardecl.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/free_vardecl.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/func_in_expr.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/func_param_from_sibling.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/func_param_from_sibling.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/func_param_in_loop.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/func_param_in_loop.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/func_param_with_many_args.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/func_param_with_many_args.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/function_10_parameters.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/function_call_in_if.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/function_call_in_if.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/functions_as_parameters.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/function_with_function_in_while.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/function_with_function_in_while.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/func_with_side_effects.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/func_with_side_effects.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/global_accumulator.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_calculator.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_chain.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_counter_reset.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_fibonacci_shared.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_from_proc.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_nested_calls.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_state_machine.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/global_swap.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/grade_system.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/grade_system.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/higher_order_nested.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/higher_order_nested.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/interstitialcomment.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/interstitialcomment.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/large_numbers.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/large_numbers.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/large_test.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/loop_break_conditions.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/loop_break_conditions.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/many_captures.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/many_captures.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/many_param_calls.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/many_param_calls.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/many_params.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/many_siblings_same_capture.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/many_siblings_same_capture.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/map_with_capture.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/map_with_capture.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/max3.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/mixed_return_void_params.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/mixed_return_void_params.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/mixed_scope.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/mix_global_local_params.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/mix_global_local_params.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multi_level_static_link.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multi_level_static_link.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multi_param_func_with_capture.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multi_param_func_with_capture.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multiple_captures.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multiple_captures.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multiple_function_params.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multiple_function_params.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multiple_globals.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/multiple_nested_same_level.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multiple_nested_same_level.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multiple_procs.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/multiple_returns.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multiple_returns.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multiple_siblings_capture_same_vars.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multiple_siblings_capture_same_vars.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/multiplication_chain.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/multiplication_chain.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/mutual_recursion.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/mutual_recursion.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_accumulator.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_accumulator.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_calls.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/nested_higher_order.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_higher_order.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_in_if_block.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_in_if_block.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_in_loop_scope.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_in_loop_scope.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_in_loop_with_if.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_in_loop_with_if.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_in_while.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_in_while.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_modify_same_var.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_modify_same_var.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_nested_capture.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_nested_capture.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_no_capture.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_no_capture.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_while_break.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_while_break.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/nested_with_modification.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/nested_with_modification.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/parameterless_with_globals.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/param_order_test.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/param_shadows_outer.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/param_shadows_outer.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_complex_breaks.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_complex_breaks.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_cross_dependencies.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_cross_dependencies.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_deep_conditionals.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_deep_conditionals.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_interdependent.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_interdependent.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_loop_multiple_defs.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_loop_multiple_defs.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_many_branches.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_many_branches.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_multiple_paths.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_multiple_paths.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_nested_loops.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_nested_loops.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_triple_nested_loops.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_triple_nested_loops.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/phi_stress_variable_rotation.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/phi_stress_variable_rotation.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/prime_checker.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/prime_checker.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/print42.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/print42.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/range_and_guards.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/recursive.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/recursive.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/recursive_helpers.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/recursive_with_func_param.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/recursive_with_func_param.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/recursive_with_global.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/return_as_argument.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/return_nested_function.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/return_nested_function.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/same_func_twice_different_captures.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/same_func_twice_different_captures.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/same_name.bx...
+Error: Procedure 'test' redeclared
+Assembler messages:
+Error: can't open tests/examples/same_name.s for reading: No such file or directory
+  [FAIL] Linking error
+Testing tests/examples/scope_shadow.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/scope_shadow.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/sequential_vars.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/sequential_vars.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/shadowing_deep_nest.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/shadowing_deep_nest.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/sibling_functions_as_params.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/sibling_functions_as_params.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/simplecomment.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/simplecomment.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/simple_nested_function.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/simple_nested_function.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/terminalcomment.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/terminalcomment.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/test.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error
+Testing tests/examples/test_insanity.bx...
+Error: Procedure 'g' redeclared
+Assembler messages:
+Error: can't open tests/examples/test_insanity.s for reading: No such file or directory
+  [FAIL] Linking error
+Testing tests/examples/three_param_func.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/three_param_func.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/triple_nest_called_twice.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/triple_nest_called_twice.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/triple_nesting.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/triple_nesting.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/two_funcs_in_loop.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/two_funcs_in_loop.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/var_shadows_func.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/var_shadows_func.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/very_deep_nesting.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/very_deep_nesting.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/void_func_multiple_calls.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/void_func_multiple_calls.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/void_func_param.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/void_func_param.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/void_param_called_twice.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/void_param_called_twice.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/void_procs.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token COMMA (value=,)
+  [FAIL] Compilation error
+Testing tests/examples/while_nested_conditions.bx...
+/usr/bin/ld: cannot open output file tests/examples/output/while_nested_conditions.exe: No such file or directory
+collect2: error: ld returned 1 exit status
+  [FAIL] Linking error
+Testing tests/examples/while_side_effect.bx...
+Traceback (most recent call last):
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1466, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1433, in main
+    prog = parse_text(src)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 1420, in parse_text
+    return parser.parse(src, lexer=lexer)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/shin/y3/y3/compilers/project/ply/yacc.py", line 503, in parse
+    tok = self.errorfunc(errtoken)
+  File "/home/shin/y3/y3/compilers/project/bxc_new.py", line 570, in p_error
+    raise BXError(f"[Parser] Syntax error at token {p.type} (value={p.value})")
+BXError: [Parser] Syntax error at token VAR (value=var)
+  [FAIL] Compilation error

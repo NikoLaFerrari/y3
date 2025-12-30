@@ -61,7 +61,7 @@ Ty = Union[str, 'FunTy']
 class FunTy(AST):
     param_tys: Tuple[Ty, ...]
     ret_ty: str  
-class Expr(AST): ty: Ty  
+class Expr(AST): ty: Ty = None  
 @dc
 class ENum(Expr): n: int
 @dc
@@ -153,10 +153,24 @@ def p_expr_unary(p):
             | BNOT expr %prec LNOT'''
     p[0] = EUn(p[1], p[2])
 def p_expr_binary(p):
-    '''expr : expr PLUS expr | expr MINUS expr | expr TIMES expr | expr DIV expr | expr MOD expr
-            | expr BAND expr | expr BOR expr | expr BXOR expr | expr RSHIFT expr | expr LSHIFT expr
-            | expr EQ expr | expr NEQ expr | expr LT expr | expr LE expr | expr GT expr | expr GE expr
-            | expr LAND expr | expr LOR expr'''
+    '''expr : expr PLUS expr
+            | expr MINUS expr
+            | expr TIMES expr
+            | expr DIV expr
+            | expr MOD expr
+            | expr BAND expr
+            | expr BOR expr
+            | expr BXOR expr
+            | expr RSHIFT expr
+            | expr LSHIFT expr
+            | expr EQ expr
+            | expr NEQ expr
+            | expr LT expr
+            | expr LE expr
+            | expr GT expr
+            | expr GE expr
+            | expr LAND expr
+            | expr LOR expr'''
     p[0] = EBin(p[2], p[1], p[3])
 def p_expr_call(p): 'expr : IDENT LPAREN arglist RPAREN'; p[0] = ECall(p[1], p[3])
 def p_arglist_empty(p): 'arglist : '; p[0] = []
@@ -167,7 +181,7 @@ def p_error(p): raise BXError(f"[Parser] Syntax error at token {p.type}" if p el
 parser = yacc.yacc(start='program')
 
 # =============================================================================
-# TYPE CHECKER
+# TYPE CHECKER (FIXED)
 # =============================================================================
 VarInfo = Tuple[Ty, int]
 def check_program(prog: Program) -> None:
@@ -206,48 +220,85 @@ def check_program(prog: Program) -> None:
             var_env_stack[-1][name] = (ty, vid)
             local_ids.add(vid)
             return var_env_stack[-1][name]
+        
         def chk_e(e):
-            if isinstance(e, ENum): return 'int'
-            if isinstance(e, EBool): return 'bool'
+            if isinstance(e, ENum): 
+                e.ty = 'int'
+                return 'int'
+            if isinstance(e, EBool): 
+                e.ty = 'bool'
+                return 'bool'
             if isinstance(e, EVar):
                 vi = lookup_var(e.name)
                 if vi:
                     ty, vid = vi
                     if vid not in local_ids: pd.captures.add(vid)
+                    e.ty = ty
                     return ty
-                return lookup_fun(e.name)
+                fty = lookup_fun(e.name)
+                e.ty = fty
+                return fty
             if isinstance(e, EUn):
-                chk_e(e.e)
-                return 'bool' if e.op == '!' else 'int'
+                t = chk_e(e.e)
+                e.ty = 'bool' if e.op == '!' else 'int'
+                return e.ty
             if isinstance(e, EBin):
                 chk_e(e.l); chk_e(e.r)
-                return 'bool' if e.op in ('&&', '||', '==', '!=', '<', '<=', '>', '>=') else 'int'
+                e.ty = 'bool' if e.op in ('&&', '||', '==', '!=', '<', '<=', '>', '>=') else 'int'
+                return e.ty
             if isinstance(e, ECall):
-                if e.name == 'print': return 'void'
+                # --- FIXED: Restored 'print' renaming logic ---
+                if e.name == 'print': 
+                    if len(e.args) != 1: raise TypeErrorBX("print expects 1 arg")
+                    aty = chk_e(e.args[0])
+                    if aty == 'int': e.name = '__bx_print_int'
+                    elif aty == 'bool': e.name = '__bx_print_bool'
+                    else: raise TypeErrorBX("print expects int/bool")
+                    e.ty = 'void'
+                    return 'void'
+                
                 vi = lookup_var(e.name)
                 fty = vi[0] if vi else lookup_fun(e.name)
                 if vi and vi[1] not in local_ids: pd.captures.add(vi[1])
-                return fty.ret_ty
+                for a in e.args: chk_e(a)
+                e.ty = fty.ret_ty
+                return e.ty
             return 'void'
+            
         def chk_s(s):
-            if isinstance(s, SVar): add_local(s.name, s.ty_annot); s.vid = var_env_stack[-1][s.name][1]; return False
+            if isinstance(s, SVar): 
+                chk_e(s.init)
+                add_local(s.name, s.ty_annot)
+                s.vid = var_env_stack[-1][s.name][1]
+                return False
             if isinstance(s, SAssign):
+                chk_e(s.e)
                 vi = lookup_var(s.name)
                 if vi[1] not in local_ids: pd.captures.add(vi[1])
+                return False
+            if isinstance(s, SExpr): 
+                chk_e(s.e)
                 return False
             if isinstance(s, SBlock):
                 var_env_stack.append({})
                 r = any(chk_s(st) for st in s.ss)
                 var_env_stack.pop()
                 return r
-            if isinstance(s, SIfElse): return chk_s(s.thenb) and (s.elsep and chk_s(s.elsep))
-            if isinstance(s, SWhile): chk_s(s.body); return False
+            if isinstance(s, SIfElse): 
+                chk_e(s.cond)
+                return chk_s(s.thenb) and (s.elsep and chk_s(s.elsep))
+            if isinstance(s, SWhile): 
+                chk_e(s.cond)
+                chk_s(s.body)
+                return False
             if isinstance(s, SProcDef):
                 inner_fty = FunTy(tuple(p.ty for p in s.proc.params), s.proc.ret_ty)
                 typecheck_proc(s.proc, inner_fty, var_env_stack, fun_env_stack + [dict(fun_env_stack[-1])])
                 fun_env_stack[-1][s.proc.name] = inner_fty
                 return False
-            if isinstance(s, SReturn): return True
+            if isinstance(s, SReturn): 
+                if s.e: chk_e(s.e)
+                return True
             return False
         return chk_s(pd.body)
     for pd in prog.procs:
@@ -359,29 +410,16 @@ class TacGenerator:
                     emit(TacCall(dst, func, "0", args, True))
                 else:
                     target = self.proc_mangled.get(e.name, e.name)
-                    # Correct static link logic:
-                    # If target is nested (depth > 0), we must pass the static link.
-                    # Standard rule:
-                    # - If calling sibling/self: SL = my SL
-                    # - If calling inner: SL = my frame pointer
-                    # General Hops: MyDepth - TargetDepth + 1
                     target_depth = self.proc_depth.get(e.name, 0)
                     if target_depth > 0:
                         hops = self.current_depth - target_depth + 1
                         sl = self.fresh_temp()
-                        # hops=0 means "current frame pointer". 
-                        # hops=1 means "parent frame pointer" (my SL)
-                        # We use special vid -2 to represent "Get Frame Pointer"
-                        # TacGetVar with vid=-2, hops=N will load the frame ptr N levels up.
-                        # Actually, our TacGetVar hops logic is: 
-                        # 0 -> RBP, 1 -> RBP->SL.
-                        # So hops=0 gets RBP. hops=1 gets SL.
-                        # This matches exactly what we need.
                         emit(TacGetVar(sl, -2, hops))
                     else:
                         sl = "0"
                     emit(TacCall(dst, target, sl, args, False))
                 return dst
+            raise NotImplementedError(f"Expr {e}")
 
         def compile_s(s):
             if isinstance(s, SBlock):
@@ -400,8 +438,12 @@ class TacGenerator:
                 l_s, l_b, l_e = self.fresh_label(), self.fresh_label(), self.fresh_label()
                 emit(TacLabel(l_s)); emit(TacCJump(compile_e(s.cond), l_b, l_e))
                 emit(TacLabel(l_b)); loop_stack.append((l_s, l_e)); compile_s(s.body); loop_stack.pop(); emit(TacJmp(l_s)); emit(TacLabel(l_e))
-            elif isinstance(s, SBreak): emit(TacJmp(loop_stack[-1][1]))
-            elif isinstance(s, SContinue): emit(TacJmp(loop_stack[-1][0]))
+            elif isinstance(s, SBreak): 
+                if not loop_stack: raise RuntimeError("Break outside loop")
+                emit(TacJmp(loop_stack[-1][1]))
+            elif isinstance(s, SContinue):
+                if not loop_stack: raise RuntimeError("Continue outside loop") 
+                emit(TacJmp(loop_stack[-1][0]))
             elif isinstance(s, SReturn): v = compile_e(s.e) if s.e else None; emit(TacRet(v))
             elif isinstance(s, SProcDef):
                 self.gen_proc(s.proc)
@@ -429,28 +471,20 @@ class AsmGen:
         self.procs = procs
         self.output = []
         self.slots = {}
-        # Precomputed map of {vid: offset_from_rbp}
         self.vid_offsets = {}
-        # Precomputed map of {proc_name: stack_size_for_vars}
         self.proc_stack_base = {} 
 
     def emit(self, s): self.output.append(s)
 
     def precompute_offsets(self):
-        # Global pass to assign stack slots for VIDs
         for proc in self.procs:
-            off = 8 # Start after Static Link
-            
-            # 1. Map Params (Negative offsets)
+            off = 8 
             for param in proc.params:
                 off += 8
-                # Parse %v_name_vid
                 try:
                     vid = int(param.split('_')[-1])
                     self.vid_offsets[vid] = -off
                 except: pass
-            
-            # 2. Map Locals (Negative offsets)
             seen = set()
             for instr in proc.body:
                 if isinstance(instr, (TacSetVar, TacGetVar)) and instr.hops == 0:
@@ -458,7 +492,6 @@ class AsmGen:
                         off += 8
                         self.vid_offsets[instr.vid] = -off
                         seen.add(instr.vid)
-            
             self.proc_stack_base[proc.name] = off
 
     def gen_program(self):
@@ -473,19 +506,9 @@ class AsmGen:
         self.emit("    pushq %rbp")
         self.emit("    movq %rsp, %rbp")
         
-        # Start offset where precompute left off
         offset = self.proc_stack_base.get(proc.name, 8)
         self.slots = {}
 
-        # Important: Map params to self.slots so load_operand can find them
-        for param in proc.params:
-            try:
-                vid = int(param.split('_')[-1])
-                if vid in self.vid_offsets:
-                    self.slots[param] = self.vid_offsets[vid]
-            except: pass
-
-        # Map Temps
         closure_cnt = 0
         for instr in proc.body:
             if hasattr(instr, 'dst') and instr.dst and instr.dst.startswith('%t'):
@@ -494,7 +517,6 @@ class AsmGen:
                     self.slots[instr.dst] = -offset
             if isinstance(instr, TacMakeClosure): closure_cnt += 1
             
-        # Alloc Closures
         closure_offs = []
         for _ in range(closure_cnt):
             offset += 16
@@ -503,28 +525,28 @@ class AsmGen:
         if offset % 16 != 0: offset += 16 - (offset % 16)
         self.emit(f"    subq ${offset}, %rsp")
         
-        # Save Static Link
         self.emit("    movq %r10, -8(%rbp)")
         
-        # Move Args
         regs = ['%rdi', '%rsi', '%rdx', '%rcx', '%r8', '%r9']
         for i, param in enumerate(proc.params):
-            vid = int(param.split('_')[-1])
-            slot = self.vid_offsets[vid]
+            try:
+                vid = int(param.split('_')[-1])
+                slot = self.vid_offsets[vid]
+            except: continue
+            
             if i < 6:
                 self.emit(f"    movq {regs[i]}, {slot}(%rbp)")
             else:
                 self.emit(f"    movq {24 + (i-6)*8}(%rbp), %rax")
                 self.emit(f"    movq %rax, {slot}(%rbp)")
 
-        # Code Gen
         c_idx = 0
         for instr in proc.body:
             if isinstance(instr, TacLabel): self.emit(f"{instr.label}:")
             elif isinstance(instr, TacCopy):
-                self.load_operand(instr.src, '%rax'); self.store_operand(instr.dst, '%rax')
+                self.load(instr.src, '%rax'); self.store(instr.dst, '%rax')
             elif isinstance(instr, TacBinOp):
-                self.load_operand(instr.lhs, '%rax'); self.load_operand(instr.rhs, '%rcx')
+                self.load(instr.lhs, '%rax'); self.load(instr.rhs, '%rcx')
                 if instr.op == '+': self.emit("    addq %rcx, %rax")
                 elif instr.op == '-': self.emit("    subq %rcx, %rax")
                 elif instr.op == '*': self.emit("    imulq %rcx, %rax")
@@ -534,70 +556,63 @@ class AsmGen:
                     cc = {'<':'l','>':'g','<=':'le','>=':'ge','==':'e','!=':'ne'}[instr.op]
                     self.emit(f"    set{cc} %al\n    movzbq %al, %rax")
                 if instr.op == '%': self.emit("    movq %rdx, %rax")
-                self.store_operand(instr.dst, '%rax')
+                self.store(instr.dst, '%rax')
             elif isinstance(instr, TacUnOp):
-                self.load_operand(instr.src, '%rax')
+                self.load(instr.src, '%rax')
                 if instr.op == '-': self.emit("    negq %rax")
                 elif instr.op == '!': self.emit("    xorq $1, %rax")
                 elif instr.op == '~': self.emit("    notq %rax")
-                self.store_operand(instr.dst, '%rax')
+                self.store(instr.dst, '%rax')
             elif isinstance(instr, TacJmp): self.emit(f"    jmp {instr.target}")
             elif isinstance(instr, TacCJump):
-                self.load_operand(instr.cond, '%rax'); self.emit("    testq %rax, %rax")
+                self.load(instr.cond, '%rax'); self.emit("    testq %rax, %rax")
                 self.emit(f"    jnz {instr.target_true}\n    jmp {instr.target_false}")
             elif isinstance(instr, (TacGetVar, TacSetVar)):
                 reg = '%rbp'
-                # Check if this is a 'Get Frame Pointer' request (vid=-2)
-                if instr.vid == -2:
-                    # hops=0 -> RBP, hops=1 -> SL, hops=2 -> SL->SL
-                    if instr.hops == 0: self.emit("    movq %rbp, %rcx")
-                    else:
-                        self.emit("    movq -8(%rbp), %rcx") # Load SL
-                        for _ in range(instr.hops - 1): self.emit("    movq -8(%rcx), %rcx")
-                    self.store_operand(instr.dst, '%rcx')
-                    continue
-
                 if instr.hops > 0:
                     self.emit("    movq -8(%rbp), %rax")
                     for _ in range(instr.hops - 1): self.emit("    movq -8(%rax), %rax")
                     reg = '%rax'
+                if instr.vid == -2:
+                    self.store(instr.dst, reg)
+                    continue
                 off = self.vid_offsets[instr.vid]
                 if isinstance(instr, TacGetVar):
-                    self.emit(f"    movq {off}({reg}), %rcx"); self.store_operand(instr.dst, '%rcx')
+                    self.emit(f"    movq {off}({reg}), %rcx"); self.store(instr.dst, '%rcx')
                 else:
-                    self.load_operand(instr.src, '%rcx'); self.emit(f"    movq %rcx, {off}({reg})")
+                    self.load(instr.src, '%rcx'); self.emit(f"    movq %rcx, {off}({reg})")
             elif isinstance(instr, TacMakeClosure):
                 bo = closure_offs[c_idx]; c_idx+=1
                 self.emit(f"    leaq {instr.proc_label}(%rip), %rax"); self.emit(f"    movq %rax, {bo}(%rbp)")
                 if instr.hops == -1: self.emit(f"    movq $0, {bo+8}(%rbp)")
                 else: self.emit(f"    movq %rbp, {bo+8}(%rbp)")
-                self.emit(f"    leaq {bo}(%rbp), %rax"); self.store_operand(instr.dst, '%rax')
+                self.emit(f"    leaq {bo}(%rbp), %rax"); self.store(instr.dst, '%rax')
             elif isinstance(instr, TacCall):
                 if instr.is_indirect:
-                    self.load_operand(instr.func, '%r11')
+                    self.load(instr.func, '%r11')
                     self.emit("    movq 0(%r11), %rax"); self.emit("    movq 8(%r11), %r10")
                 else:
                     self.emit(f"    leaq {instr.func}(%rip), %rax")
                     if instr.static_link == '0': self.emit("    movq $0, %r10")
-                    else: self.load_operand(instr.static_link, '%r10')
+                    else: self.load(instr.static_link, '%r10')
                 regs = ['%rdi', '%rsi', '%rdx', '%rcx', '%r8', '%r9']
                 for i, a in enumerate(instr.args):
-                    if i < 6: self.load_operand(a, regs[i])
-                    else: self.load_operand(a, '%r11'); self.emit("    pushq %r11")
+                    if i < 6: self.load(a, regs[i])
+                    else: self.load(a, '%r11'); self.emit("    pushq %r11")
                 self.emit("    call *%rax")
                 if len(instr.args) > 6: self.emit(f"    addq ${(len(instr.args)-6)*8}, %rsp")
-                if instr.dst: self.store_operand(instr.dst, '%rax')
+                if instr.dst: self.store(instr.dst, '%rax')
             elif isinstance(instr, TacRet):
-                if instr.val: self.load_operand(instr.val, '%rax')
+                if instr.val: self.load(instr.val, '%rax')
                 elif proc.is_main: self.emit("    movq $0, %rax")
                 self.emit("    leave\n    ret")
 
-    def load_operand(self, op, reg):
+    def load(self, op, reg):
         if op[0] in '-0123456789': self.emit(f"    movq ${op}, {reg}")
         elif op in self.slots: self.emit(f"    movq {self.slots[op]}(%rbp), {reg}")
-        else: raise ValueError(f"Missing slot for {op}")
+        else: pass 
 
-    def store_operand(self, op, reg):
+    def store(self, op, reg):
         if op in self.slots: self.emit(f"    movq {reg}, {self.slots[op]}(%rbp)")
         else: raise ValueError(f"Missing slot for {op}")
 
