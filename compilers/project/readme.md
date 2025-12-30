@@ -6,7 +6,7 @@
 * **Unique VIDs**: To handle variable shadowing and nested scopes correctly, every declared variable is assigned a unique integer `vid`. The type checker resolves names to these VIDs immediately.
 * **Capture Sets**: During type checking (`check_program`), the compiler computes the set of captured variables for each nested procedure. If a variable is accessed from an outer scope, its VID is added to the procedure's `captures` set.
 * **Scope Management**: The type checker uses a stack of environments (`fun_env_stack`) to correctly enforce the rule that inner functions cannot be redeclared in the same scope.
-* Function values are restricted to parameters only. Functions are neither returned nor stored in variables, matching the project constraints and enabling a static-link–based implementation without full closures.
+* Function values are restricted to parameters only. Functions are neither returned nor stored in variables, enabling a static-link–based implementation without full closures.
 
 
 ### 2. Intermediate Representation (TAC)
@@ -32,3 +32,4 @@
         * `gen_proc`: Calculates stack offsets and ensures space is reserved for captured VIDs.
         * `TacCall` (in `gen_proc`): Implements the critical push order: Arguments -> Static Link -> Padding.
 
+* **Global Variables**: Globals are allocated in the `.data` section and accessed via RIP-relative addressing. They are integrated into the same `TacGetVar` / `TacSetVar` mechanism using a special global access mode.
