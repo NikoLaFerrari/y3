@@ -5,9 +5,7 @@
 This compiler extends the BX language with **higher-order function parameters** and **nested procedure definitions**, while preserving **lexical scoping** using **static links**.  
 The implementation follows the project specification closely and avoids full closures by representing function values as **fat pointers**.
 
-Compilation pipeline:
-
-`BX source → AST → Type Checking & Capture Analysis → TAC → x86-64 Assembly`
+Compilation pipeline: `BX source → AST → Type Checking & Capture Analysis → TAC → x86-64 Assembly`
 
 ---
 
