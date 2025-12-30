@@ -85,9 +85,12 @@ In the callee:
 - **Global variables** are allocated in the `.data` section and accessed using RIP-relative addressing.
 - Local, captured, and global variables are unified through the same `TacGetVar` / `TacSetVar` mechanism.
 
+### How to Run
+
 ```bash
 python3 bxc.py <source_file.bx>
 ```
+This produces `<source_file.s>`
 ---
 
 
