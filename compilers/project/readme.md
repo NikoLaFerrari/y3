@@ -1,9 +1,4 @@
-# BX Compiler - Higher-Order Functions & Nested Procedures
-
-## Overview
-This project extends the BX compiler to support **Higher-Order Functions** and **Nested Procedures**. It implements a fully functional compiler pipeline including scanning, parsing, semantic analysis (with capture detection), TAC generation, and x86-64 assembly generation.
-
-The compiler strictly adheres to the project specification, utilizing **Static Links** and **Fat Pointers** to manage lexical scoping and function values without heap-allocated closures.
+# Higher-Order Functions & Nested Procedures
 
 ## Design Choices
 
@@ -11,6 +6,8 @@ The compiler strictly adheres to the project specification, utilizing **Static L
 * **Unique VIDs**: To handle variable shadowing and nested scopes correctly, every declared variable is assigned a unique integer `vid`. The type checker resolves names to these VIDs immediately.
 * **Capture Sets**: During type checking (`check_program`), the compiler computes the set of captured variables for each nested procedure. If a variable is accessed from an outer scope, its VID is added to the procedure's `captures` set.
 * **Scope Management**: The type checker uses a stack of environments (`fun_env_stack`) to correctly enforce the rule that inner functions cannot be redeclared in the same scope.
+Function values are restricted to parameters only. Functions are neither returned nor stored in variables, matching the project constraints and enabling a static-link–based implementation without full closures.
+
 
 ### 2. Intermediate Representation (TAC)
 * **Fat Pointers**: Function values are treated as "Fat Pointers" (Code Pointer + Static Link).
@@ -24,6 +21,7 @@ The compiler strictly adheres to the project specification, utilizing **Static L
     * **Padding**: A dummy 8-byte value is pushed at `16(%rbp)` to maintain 16-byte alignment.
 * **Static Link Chaining**: The `_walk_static_link` function generates assembly to traverse the chain of static links (`movq 24(%rbp), %reg`) to reach the correct stack frame for captured variables.
 * **Variable Storage**: Captured variables are forced into stack slots (identified by their VID) to ensure they are addressable via static links, even if they would normally be register-allocated.
+* **Global Variables**: Globals are allocated in the `.data` section and accessed via RIP-relative addressing. They are integrated into the same `TacGetVar` / `TacSetVar` mechanism using a special global access mode.
 
 ## Implementation Guide
 
@@ -34,8 +32,3 @@ The compiler strictly adheres to the project specification, utilizing **Static L
         * `gen_proc`: Calculates stack offsets and ensures space is reserved for captured VIDs.
         * `TacCall` (in `gen_proc`): Implements the critical push order: Arguments -> Static Link -> Padding.
 
-## How to Run
-The compiler is written in Python 3.
-
-```bash
-python3 bxc.py <source_file.bx>
