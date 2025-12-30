@@ -90,7 +90,7 @@ In the callee:
 ```bash
 python3 bxc.py <source_file.bx>
 ```
-This produces `<source_file.s>`
+- This produces `<source_file.s>`
 ---
 
 
